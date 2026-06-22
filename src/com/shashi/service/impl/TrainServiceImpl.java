@@ -17,27 +17,32 @@ public class TrainServiceImpl implements TrainService {
 
 	@Override
 	public String addTrain(TrainBean train) {
-		String responseCode = ResponseCode.FAILURE.toString();
-		String query = "INSERT INTO TRAIN VALUES(?,?,?,?,?,?)";
-		try {
-			Connection con = DBUtil.getConnection();
-			PreparedStatement ps = con.prepareStatement(query);
-			ps.setLong(1, train.getTr_no());
-			ps.setString(2, train.getTr_name());
-			ps.setString(3, train.getFrom_stn());
-			ps.setString(4, train.getTo_stn());
-			ps.setLong(5, train.getSeats());
-			ps.setDouble(6, train.getFare());
-			ResultSet rs = ps.executeQuery();
-			if (rs.next()) {
-				responseCode = ResponseCode.SUCCESS.toString();
-			}
-			ps.close();
-		} catch (SQLException | TrainException e) {
-			responseCode += " : " + e.getMessage();
-		}
-		return responseCode;
+	    String responseCode = ResponseCode.FAILURE.toString();
+	    String query = "INSERT INTO TRAIN VALUES(?,?,?,?,?,?)";
+	    try {
+	        Connection con = DBUtil.getConnection();
+	        PreparedStatement ps = con.prepareStatement(query);
+	        ps.setLong(1, train.getTr_no());
+	        ps.setString(2, train.getTr_name());
+	        ps.setString(3, train.getFrom_stn());
+	        ps.setString(4, train.getTo_stn());
+	        ps.setLong(5, train.getSeats());
+	        ps.setDouble(6, train.getFare());
+
+	        // ✅ Use executeUpdate() for INSERT
+	        int rowsInserted = ps.executeUpdate();
+
+	        if (rowsInserted > 0) {
+	            responseCode = ResponseCode.SUCCESS.toString();
+	        }
+
+	        ps.close();
+	    } catch (SQLException | TrainException e) {
+	        responseCode += " : " + e.getMessage();
+	    }
+	    return responseCode;
 	}
+
 
 	@Override
 	public String deleteTrainById(String trainNo) {
@@ -60,27 +65,32 @@ public class TrainServiceImpl implements TrainService {
 
 	@Override
 	public String updateTrain(TrainBean train) {
-		String responseCode = ResponseCode.FAILURE.toString();
-		String query = "UPDATE TRAIN SET TR_NAME=?, FROM_STN=?,TO_STN=?,SEATS=?,FARE=? WHERE TR_NO=?";
-		try {
-			Connection con = DBUtil.getConnection();
-			PreparedStatement ps = con.prepareStatement(query);
-			ps.setString(1, train.getTr_name());
-			ps.setString(2, train.getFrom_stn());
-			ps.setString(3, train.getTo_stn());
-			ps.setLong(4, train.getSeats());
-			ps.setDouble(5, train.getFare());
-			ps.setDouble(6, train.getTr_no());
-			ResultSet rs = ps.executeQuery();
-			if (rs.next()) {
-				responseCode = ResponseCode.SUCCESS.toString();
-			}
-			ps.close();
-		} catch (SQLException | TrainException e) {
-			responseCode += " : " + e.getMessage();
-		}
-		return responseCode;
+	    String responseCode = ResponseCode.FAILURE.toString();
+	    String query = "UPDATE TRAIN SET TR_NAME=?, FROM_STN=?, TO_STN=?, SEATS=?, FARE=? WHERE TR_NO=?";
+	    try {
+	        Connection con = DBUtil.getConnection();
+	        PreparedStatement ps = con.prepareStatement(query);
+	        ps.setString(1, train.getTr_name());
+	        ps.setString(2, train.getFrom_stn());
+	        ps.setString(3, train.getTo_stn());
+	        ps.setLong(4, train.getSeats());
+	        ps.setDouble(5, train.getFare());
+	        ps.setLong(6, train.getTr_no()); // ✅ Use setLong for TR_NO
+
+	        // ✅ Use executeUpdate() for UPDATE statements
+	        int rowsUpdated = ps.executeUpdate();
+
+	        if (rowsUpdated > 0) {
+	            responseCode = ResponseCode.SUCCESS.toString();
+	        }
+
+	        ps.close();
+	    } catch (SQLException | TrainException e) {
+	        responseCode += " : " + e.getMessage();
+	    }
+	    return responseCode;
 	}
+
 
 	@Override
 	public TrainBean getTrainById(String trainNo) throws TrainException {
